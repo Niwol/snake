@@ -1,2 +1,2 @@
 # snake
-First project : a snake game
+First project whith git : a snake game
