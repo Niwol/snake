@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "list.h"
 
 typedef struct linkedElement_s
@@ -57,8 +58,47 @@ List list_pushBack(List l, void *data)
     return l;
 }
 
+List list_pushFront(List l, void *data)
+{
+    LinkedElement new = malloc(sizeof(struct linkedElement_s));
+    
+    new->data = data;
+    new->previous = l->sentinel;
+    new->next = l->sentinel->next;
+    l->sentinel->next->previous = new;
+    l->sentinel->next = new;
+    (l->size)++;
+
+    return l;
+}
+
+List list_insert(List l, int pos, void *data)
+{
+    assert(pos <= l->size);
+
+    LinkedElement new = malloc(sizeof(struct linkedElement_s));
+    LinkedElement e = l->sentinel;
+
+    while(pos > 0)
+    {
+        e = e->next;
+        pos--;
+    }
+
+    new->data = data;
+    new->previous = e;
+    new->next = e->next;
+    e->next->previous = new;
+    e->next = new;
+    (l->size)++;
+
+    return l;
+}
+
 List list_popBack(List l)
 {
+    assert(l->size != 0);
+
     LinkedElement del = l->sentinel->previous;
 
     l->sentinel->previous = del->previous;
@@ -70,9 +110,64 @@ List list_popBack(List l)
     return l;
 }
 
+List list_popFront(List l)
+{
+    assert(l->size != 0);
+
+    LinkedElement del = l->sentinel->next;
+
+    l->sentinel->next = del->next;
+    del->next->previous = l->sentinel;
+    (l->size)--;
+
+    free(del);
+
+    return l;
+}
+
+List list_remove(List l, int pos)
+{
+    assert(pos < l->size);
+    
+    LinkedElement del = l->sentinel->next;
+
+    while(pos > 0)
+    {
+        del = del->next;
+        pos--;
+    }
+
+    del->next->previous = del->previous;
+    del->previous->next = del->next;
+    (l->size)--;
+
+    free(del);
+    return l;
+}
+
 void *list_back(List l)
 {
+    assert(l->size != 0);
     return l->sentinel->previous->data;
+}
+
+void *list_front(List l)
+{
+    assert(l->size != 0);
+    return l->sentinel->next->data;
+}
+
+void *list_at(List l, int pos)
+{
+    assert(pos < l->size);
+    LinkedElement e = l->sentinel->next;
+    while(pos > 0)
+    {
+        e = e->next;
+        pos--;
+    }
+    
+    return e->data;
 }
 
 void list_dump(List l, simpleFunctor f)

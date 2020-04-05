@@ -20,8 +20,8 @@ int main()
     for(int i = 0;i < 10; i++)
     {
         current = &tabVals[i];
-        printf("Push back %d\n", *current);
-        list_pushBack(l, current);
+        printf("insert %d à %d\n", *current, i/2);
+        list_insert(l, i/2, current);
     }
 
     printf("\n");
@@ -31,9 +31,9 @@ int main()
 
     for(int i = 0;i < 5; i++)
     {
-        current = list_back(l);
-        printf("Pop back %d\n", *current);
-        list_popBack(l);
+        current = list_at(l, i);
+        printf("remove %d\n", *current);
+        list_remove(l, i);
     }
     
     printf("\n");
