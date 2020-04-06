@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall
-LDFLAGS = `pkg-config --libs allegro-5 allegro_dialog-5`
+LDFLAGS = `pkg-config --libs allegro-5 allegro_dialog-5 allegro_primitives-5`
 
 ifeq ($(DEBUG), yes)
 	CFLAGS += -g
@@ -17,7 +17,7 @@ obj/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(EXEC): $(OBJ)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
 clean:
 	rm obj/*
