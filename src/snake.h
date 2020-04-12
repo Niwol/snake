@@ -29,11 +29,14 @@ typedef struct snake_s
     List snake;
     snakeTile_t *head;
     int direction;
+    bool dead;
 } snake_t;
 
 void snake_create(snake_t *snake);
+void snake_delete(snake_t *snake);
 void snake_move(snake_t *snake);
 bool snake_onFood(snake_t s, food_t f);
+void snake_dies(snake_t *s); 
 void snake_grow(snake_t *snake);
 void snake_draw(const snake_t snake);
 void snake_drawTile(void *data);

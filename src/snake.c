@@ -1,5 +1,13 @@
 #include "snake.h"
 
+// Private
+
+bool snake_onItSelf(snake_t s);
+bool snake_offScreen(snake_t s);
+
+
+// Public
+
 void snake_create(snake_t *snake)
 {
     snakeTile_t *tile1;
@@ -33,11 +41,26 @@ void snake_create(snake_t *snake)
     tile3->y = 15;
 
     snake->direction = RIGHT;
+    snake->dead = false;
     snake->snake = list_create();
 
     list_pushBack(snake->snake, tile1);
     list_pushBack(snake->snake, tile2);
     list_pushBack(snake->snake, tile3);
+}
+
+void snake_delete(snake_t *snake)
+{
+    while(!list_empty(snake->snake))
+    {
+        snakeTile_t *t = list_back(snake->snake);
+        list_popBack(snake->snake);
+        free(t);
+    }
+
+    free(snake->head);
+
+    list_delite(&(snake->snake));
 }
 
 void snake_move(snake_t *snake)
@@ -74,6 +97,29 @@ void snake_move(snake_t *snake)
 bool snake_onFood(snake_t s, food_t f)
 {
     return s.head->x == f.x && s.head->y == f.y;
+}
+
+bool snake_onItSelf(snake_t s)
+{
+    for(snakeTile_t *t = s.head->previous; t != NULL; t = t->previous)
+    {
+        if(s.head->x == t->x && s.head->y == t->y)
+            return true;
+    }
+
+    return false;
+}
+
+bool snake_offScreen(snake_t s)
+{
+    return (s.head->x < 0 || s.head->x >= SCREEN_W / TILE_W ||
+            s.head->y < 0 || s.head->y >= SCREEN_H / TILE_H);
+}
+
+void snake_dies(snake_t *s)
+{
+    if(snake_onItSelf(*s) || snake_offScreen(*s))
+        s->dead = true;
 }
 
 void snake_grow(snake_t *snake)

@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall
-LDFLAGS = `pkg-config --libs allegro-5 allegro_dialog-5 allegro_primitives-5`
+LDFLAGS = `pkg-config --libs allegro-5 allegro_dialog-5 allegro_primitives-5 allegro_image-5 allegro_font-5 allegro_ttf-5`
 
 ifeq ($(DEBUG), yes)
 	CFLAGS += -g
@@ -9,8 +9,8 @@ else
 endif
 
 EXEC = bin/snake
-SRC= $(wildcard src/*.c)
-OBJ= $(subst src,obj, $(SRC:.c=.o))
+SRC = $(wildcard src/*.c)
+OBJ = $(subst src,obj, $(SRC:.c=.o))
 
 
 obj/%.o: src/%.c

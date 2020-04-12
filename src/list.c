@@ -39,6 +39,11 @@ void list_delite(List *l)
     *l = NULL;
 }
 
+bool list_empty(List l)
+{
+    return l->size == 0;
+}
+
 int list_size(List l)
 {
     return l->size;

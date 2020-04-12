@@ -15,4 +15,6 @@ enum
     RIGHT
 };
 
+void erreur(const char *txt);
+
 #endif

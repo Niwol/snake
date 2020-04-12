@@ -6,9 +6,13 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_native_dialog.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 
 #include "list.h"
 #include "snake.h"
+#include "game.h"
 #include "constants.h"
 
 
@@ -28,35 +32,21 @@ int main()
 
     ALLEGRO_DISPLAY *display;
     ALLEGRO_EVENT_QUEUE *eventQueue;
-    ALLEGRO_TIMER *timer_snakeMove;
-    ALLEGRO_TIMER *timer_draw;
+    ALLEGRO_FONT *menuFont;
     
     int finish = 0;
-
-    snake_t snake;
-    food_t food;
-
-    bool canMove = true;
-
-    snake_create(&snake);
-    food_setPosition(&food);
-
-    food.x = rand() % SCREEN_W / TILE_W;
+    int selectedOption = 0;
 
     if(!al_init())
         erreur("al_init()");
 
     allegroInit(&display, &eventQueue);
 
-    timer_snakeMove = al_create_timer(0.1);
-    al_register_event_source(eventQueue, al_get_timer_event_source(timer_snakeMove));
 
-    timer_draw = al_create_timer(1 / 60.0);
-    al_register_event_source(eventQueue, al_get_timer_event_source(timer_draw));
+    menuFont = al_load_font("Ubuntu-M.ttf", 80, 0);
+    if(!menuFont)
+        erreur("al_load_font(\"Ubuntu-M.ttf\", 80, 0)");
 
-
-    al_start_timer(timer_snakeMove);
-    al_start_timer(timer_draw);
     while(!finish)
     {
         ALLEGRO_EVENT event;
@@ -67,84 +57,36 @@ int main()
 
         if(event.type == ALLEGRO_EVENT_KEY_DOWN)
         {
-            if(canMove)
+            switch(event.keyboard.keycode)
             {
-                switch(event.keyboard.keycode)
-                {
-                case ALLEGRO_KEY_UP:
-                    if(snake.direction != DOWN)
-                        snake.direction = UP;
-                    break;
+                case ALLEGRO_KEY_DOWN: selectedOption = (selectedOption + 1) % 3; break;
+                case ALLEGRO_KEY_UP: selectedOption = selectedOption == 0 ? 2 : selectedOption - 1; break;
 
-                case ALLEGRO_KEY_DOWN:
-                    if(snake.direction != UP)
-                        snake.direction = DOWN;
-                    break;
-
-                case ALLEGRO_KEY_LEFT:
-                    if(snake.direction != RIGHT)
-                        snake.direction = LEFT;
-                    break;
-
-                case ALLEGRO_KEY_RIGHT:
-                    if(snake.direction != LEFT)
-                        snake.direction = RIGHT;
-                    break;
-                }
-
-                canMove = false;
-            }
-        }
-
-
-        // Timer events
-        // Sanke move and drawing
-
-        if(event.type == ALLEGRO_EVENT_TIMER)
-        {
-            //Snake move
-            if(event.timer.source == timer_snakeMove)
-            {
-                snake_move(&snake);
-                canMove = true;
-
-                if(snake_onFood(snake, food))
-                {
-                    food_setPosition(&food);
-                    snake_grow(&snake);
-                    printf("Plop\n");
-                }
-
-                event.type = 0;
-            }
-
-
-            // Drawing
-            if(event.timer.source == timer_draw)
-            {
-
-                al_clear_to_color(al_map_rgb(15, 15, 15));
-
-                /*for(int i = 0; i < SCREEN_W / 20; i++)
-                {
-                    for(int j = 0; j < SCREEN_H / 20; j++)
+                case ALLEGRO_KEY_ENTER:
+                    switch(selectedOption)
                     {
-                        al_draw_line(i*20, j*20, i*20 + 20, j*20, al_map_rgb(0, 100, 0), 2);
-                        al_draw_line(i*20, j*20, i*20, j*20 + 20, al_map_rgb(0, 100, 0), 2);
-                        al_draw_line(i*20 + 20, j*20, i*20 + 20, j*20 + 20, al_map_rgb(0, 100, 0), 2);
-                        al_draw_line(i*20, j*20 + 20, i*20 + 20, j*20 + 20, al_map_rgb(0, 100, 0), 2);
+                        case 0: play_singlePlayer(eventQueue); break;
+                        case 1: break;
+                        case 2: finish = 1; break;
                     }
-                }*/
-
-                snake_draw(snake);
-                food_draw(food);
-
-
-                al_flip_display();
-
-                event.type = 0;
             }
         }
+
+        // Drawing
+        al_clear_to_color(al_map_rgb(15, 15, 15));
+
+        switch(selectedOption)
+        {
+            case 0: al_draw_filled_rectangle(260, 150, 765, 250, al_map_rgb(0, 50, 0)); break;
+            case 1: al_draw_filled_rectangle(260, 270, 765, 370, al_map_rgb(0, 50, 0)); break;
+            case 2: al_draw_filled_rectangle(260, 390, 765, 490, al_map_rgb(0, 50, 0)); break;
+        }
+
+        al_draw_text(menuFont, al_map_rgb(0, 150, 0), 270, 150, 0, "Single player");
+        al_draw_text(menuFont, al_map_rgb(0, 150, 0), 280, 270, 0, "Multi player");
+        al_draw_text(menuFont, al_map_rgb(0, 150, 0), 410, 390, 0, "Quit");
+
+        al_flip_display();
     }
 
 
@@ -172,6 +114,14 @@ void allegroInit(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **eventQueue)
     
     if(!al_init_primitives_addon())
         erreur("al_init_primities_addon()");
+
+    if(!al_init_image_addon())
+        erreur("al_init_image_addon()");
+
+    al_init_font_addon();
+
+    if(!al_init_ttf_addon())
+        erreur("al_init_ttf_addon()");
     
 
     al_register_event_source(*eventQueue, al_get_display_event_source(*display));

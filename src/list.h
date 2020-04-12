@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct list_s *List;
 typedef void(*simpleFunctor)(void*);
@@ -10,6 +11,7 @@ typedef void(*simpleFunctor)(void*);
 
 List list_create();
 void list_delite(List *l);
+bool list_empty(List l);
 int list_size(List l);
 List list_pushBack(List l, void *data);
 List list_pushFront(List l, void *data);
