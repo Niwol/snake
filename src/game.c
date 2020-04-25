@@ -160,7 +160,7 @@ void play_multiPlayer(ALLEGRO_EVENT_QUEUE *eventQueue)
         if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
             exit(0);
 
-        if(snake1.dead && snake2.dead)
+        if(snake1.dead || snake2.dead)
             finish = 1;
 
         if(event.type == ALLEGRO_EVENT_KEY_DOWN)
