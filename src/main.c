@@ -66,9 +66,11 @@ int main()
                     switch(selectedOption)
                     {
                         case 0: play_singlePlayer(eventQueue); break;
-                        case 1: break;
+                        case 1: play_multiPlayer(eventQueue); break;
                         case 2: finish = 1; break;
                     }
+                    event.keyboard.keycode = 0;
+                    break;
             }
         }
 
@@ -90,6 +92,7 @@ int main()
     }
 
 
+    al_destroy_event_queue(eventQueue);
     al_destroy_display(display);
 
     return 0;
